@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-@Entity(name="User")
-public class User 
+@Entity
+@Table(name = "users")
+//@Entity(name="User") создаст таблицу user, а это зарезервированное слово в PostgreSQL.
+public class User
 {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -30,6 +32,8 @@ public class User
         this.username = username;
         this.password = password;
     }
+    protected User(){}
+    //пустой обязательно нужен Hibernate без него не создаст объект
 	
 	public long getId() {
 		return id;

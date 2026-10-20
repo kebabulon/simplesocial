@@ -14,5 +14,7 @@ import io.github.kebabulon.simplesocial.entity.User;
 public class UserController
 {
 	// @Autowired
+    // через автовиред плохо писать private final UserRepository userreposuitory и
+    // и через конструктор (с lombok @RequiredArgsConstructor)
 	// private UserServices services;
 }
