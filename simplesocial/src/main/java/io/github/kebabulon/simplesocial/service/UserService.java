@@ -3,6 +3,7 @@ package io.github.kebabulon.simplesocial.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,17 +16,23 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public User createUser(String username, String password) {
-        // TODO: check if username is unique
-        // if(userRepository.existsByUsername(username)) {
-        //     throw new 
-        // }
-        // TODO: hash password
-        User newUser = new User(username, password);
-        User savedUser = userRepository.save(newUser);
-        return savedUser;
+        if (userRepository.existsByUsername(username)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
+        }
+
+        return userRepository.save(new User(username, passwordEncoder.encode(password)));
+    }
+
+    @Transactional(readOnly = true)
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+    public boolean checkPassword(User user, String rawPassword) {
+        return passwordEncoder.matches(rawPassword, user.getPassword());
     }
 
     @Transactional(readOnly = true)
